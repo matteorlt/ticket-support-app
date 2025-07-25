@@ -23,6 +23,9 @@ app.use(express.json());
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
+const ticketRoutes = require('./routes/ticket');
+app.use('/api/tickets', ticketRoutes);
+
 app.get('/', (req, res) => {
   res.send('API is running!');
 });

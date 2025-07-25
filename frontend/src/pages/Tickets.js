@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const theme = {
   primary: '#22336c',
@@ -12,8 +13,24 @@ const theme = {
 };
 
 const Tickets = () => {
-  // Placeholder tickets (à remplacer par les vrais tickets plus tard)
-  const tickets = [];
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get('/api/tickets');
+        setTickets(res.data);
+      } catch (err) {
+        setError('Erreur lors du chargement des tickets.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTickets();
+  }, []);
 
   return (
     <div style={{ minHeight: '100vh', background: theme.light, fontFamily: 'Poppins, Arial, sans-serif' }}>
@@ -24,7 +41,11 @@ const Tickets = () => {
             Créer un ticket
           </Link>
         </div>
-        {tickets.length === 0 ? (
+        {loading ? (
+          <div className="text-center my-5">Chargement...</div>
+        ) : error ? (
+          <div className="alert alert-danger text-center">{error}</div>
+        ) : tickets.length === 0 ? (
           <div className="alert alert-info text-center">Aucun ticket pour le moment.<br/>Créez votre premier ticket pour commencer !</div>
         ) : (
           <div className="row g-4">
@@ -34,6 +55,10 @@ const Tickets = () => {
                   <h5 style={{ color: theme.primary, fontWeight: 700 }}>{ticket.title}</h5>
                   <p style={{ color: theme.textSecondary }}>{ticket.description}</p>
                   <span className="badge" style={{ background: theme.secondary, color: '#fff', borderRadius: '1rem', padding: '0.4rem 1.2rem', fontWeight: 600 }}>{ticket.status}</span>
+                  <div className="mt-2" style={{ color: theme.textSecondary, fontSize: '0.95rem' }}>
+                    Par {ticket.author?.name || 'Utilisateur'}<br/>
+                    <span style={{ fontSize: '0.85rem' }}>{new Date(ticket.createdAt).toLocaleString()}</span>
+                  </div>
                 </div>
               </div>
             ))}
