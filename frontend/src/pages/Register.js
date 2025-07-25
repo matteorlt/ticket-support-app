@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const theme = {
   primary: '#1a237e',
@@ -11,15 +13,25 @@ const theme = {
 
 const Register = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: call API to register
-    alert('Registration submitted!');
+    setError('');
+    setSuccess('');
+    try {
+      await axios.post('/api/auth/register', form);
+      setSuccess('Registration successful! You can now log in.');
+      setTimeout(() => navigate('/login'), 1500);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Registration failed');
+    }
   };
 
   return (
@@ -29,6 +41,8 @@ const Register = () => {
           <div className="col-md-7 col-lg-5 col-12">
             <div style={{ background: theme.card, borderRadius: '1.5rem', boxShadow: '0 8px 32px rgba(26,35,126,0.12)', border: `1px solid ${theme.border}` }} className="p-4">
               <h2 className="mb-4 text-center" style={{ color: theme.primary, fontWeight: 700 }}>Register</h2>
+              {error && <div className="alert alert-danger">{error}</div>}
+              {success && <div className="alert alert-success">{success}</div>}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label className="form-label" style={{ color: theme.text }}>Name</label>

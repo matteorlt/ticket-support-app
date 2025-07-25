@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const theme = {
   primary: '#1a237e',
@@ -11,15 +13,24 @@ const theme = {
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: call API to login
-    alert('Login submitted!');
+    setError('');
+    try {
+      const res = await axios.post('/api/auth/login', form);
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      navigate('/profile');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed');
+    }
   };
 
   return (
@@ -29,6 +40,7 @@ const Login = () => {
           <div className="col-md-7 col-lg-5 col-12">
             <div style={{ background: theme.card, borderRadius: '1.5rem', boxShadow: '0 8px 32px rgba(26,35,126,0.12)', border: `1px solid ${theme.border}` }} className="p-4">
               <h2 className="mb-4 text-center" style={{ color: theme.primary, fontWeight: 700 }}>Login</h2>
+              {error && <div className="alert alert-danger">{error}</div>}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label className="form-label" style={{ color: theme.text }}>Email</label>
