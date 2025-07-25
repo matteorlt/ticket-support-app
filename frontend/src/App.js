@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
+import Tickets from './pages/Tickets';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <div className="container">
             <Link className="navbar-brand fw-bold" to="/">Ticket Support App</Link>
             <div>
+              <Link to="/tickets" className="btn btn-outline-light me-2">Tickets</Link>
               <Link to="/register" className="btn btn-outline-light me-2">Register</Link>
               <Link to="/login" className="btn btn-light">Login</Link>
             </div>
@@ -25,6 +27,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/tickets" element={<Tickets />} />
           </Routes>
         </main>
       </div>
